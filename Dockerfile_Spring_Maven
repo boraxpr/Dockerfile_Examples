@@ -1,0 +1,7 @@
+FROM maven:3.8.6-eclipse-temurin-11 
+COPY . /app
+WORKDIR /app
+RUN --mount=type=cache,target=/root/.m2 mvn -f pom.xml clean package
+ENV PORT=8081
+EXPOSE 8081
+ENTRYPOINT ["java","-javaagent:/app/elastic-apm-agent-${APM_AGENT_VERSION}.jar","-Delastic.apm.service_name=myApp","-Delastic.apm.server_urls=http://${ELK_SERVER_URL}:8200","-Delastic.apm.secret_token=" "-Delastic.apm.environment=SIT","-Delastic.apm.application_packages=com.example.myApp","-jar","/app/target/myApp.jar"]
